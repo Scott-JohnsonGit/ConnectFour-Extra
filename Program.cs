@@ -1,41 +1,34 @@
-﻿namespace Connect4
+﻿using System.Data.Common;
+
+namespace Connect4
 {
     internal class Program
     {
+        /// <summary>
+        /// Sets up game with preset rules and accounts
+        /// </summary>
         static void Main(string[] args)
         {
-            C4Board b = new C4Board(SpecialRules.None); // Create new game with no special rules
+            C4Game game = new C4Game(SpecialRules.None, "Scott(The Creator)", "Luka Aggoune(good guy)");
+            // Continue forever (even after winning)
             while (true)
             {
-                PrintB(b.DebugBoard);
-                // check for and print a winner
-                if (b.CheckWin(out int player))
+                // Print current board state
+                Console.WriteLine(game.GameBoard.DebugBoard);
+                // Takes turn checking for a win
+                game.TakeTurn(int.Parse(Console.ReadLine()), out Connect4Player? winner, out WinType winCondition);
+                Console.Clear();
+                // A player won
+                if (winner != null)
                 {
-                    Console.WriteLine($"Player {player} Won");
+                    Console.WriteLine($"{winner.CurrentAccount} WON! {winCondition}, this is their total win number {winner.GameWins}");
                 }
-                // Find and place the next piece
-                int c = AskColumn() - 1;
-                b.TryPlacePiece(b.LowestEmptySpace(c), c);
+                // Board filled (draw)
+                else if (winCondition == WinType.Draw)
+                {
+                    Console.WriteLine("DRAW!");
+                }
             }
-        }
-        /// <summary>
-        /// Prints visual representation of the current board
-        /// </summary>
-        /// <param name="board">current board state</param>
-        private static void PrintB(string board)
-        {
-            Console.Clear();
-            Console.WriteLine(board);
-        }
-        /// <summary>
-        /// Asks the player for a column to drop their piece
-        /// </summary>
-        /// <returns>Column player specifies</returns>
-        private static int AskColumn()
-        {
-            // Add idiot proofing later!!!!
-            string column = Console.ReadLine();
-            return int.Parse(column);
         }
     }
 }
